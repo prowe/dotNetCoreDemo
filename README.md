@@ -2,6 +2,10 @@
 
 ## To run
 1. Install the .Net Core SDK from [https://www.microsoft.com/net/core](https://www.microsoft.com/net/core)
+2. Restore (download) dependencies by running
+    ```Bash
+    dotnet Restore
+    ```
 2. To deploy the database schema run
     ```Bash
     dotnet ef database update
