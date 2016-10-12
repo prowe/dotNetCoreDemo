@@ -8,8 +8,8 @@ using PokemonService;
 namespace demo.Migrations
 {
     [DbContext(typeof(PokemonDbContext))]
-    [Migration("20161007032245_AddType")]
-    partial class AddType
+    [Migration("20161012010635_createPokemon")]
+    partial class createPokemon
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
