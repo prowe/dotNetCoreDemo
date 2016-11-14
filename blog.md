@@ -1,6 +1,6 @@
 # .NET core from Soup-to-Nuts.
 
-Build a API backend for your application using the newest version of .NET that can be developed anywhere and run anywhere else.
+Build a API backend for your application using the newest version of .NET that can be developed anywhere and run everywhere.
 
 ## Environment Setup
 
