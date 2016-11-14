@@ -15,7 +15,7 @@ Let's start with a simple "Hello World" application to just test that our enviro
 ```bash
 dotnet new
 ```
-This command creates a project.json file and a Program.cs file. There is nothing special about this process and these files could have been created by hand. The Program.cs file contains the main entry point of the application. The project.json file replaces the .sln and .csproj files of traditional .net with a simpler file that looks much like an [NPM package.json](https://docs.npmjs.com/files/package.json). Node.js developers should be very familiar with the syntax. The full file reference can be found at [https://docs.microsoft.com/en-us/dotnet/articles/core/tools/project-json](https://docs.microsoft.com/en-us/dotnet/articles/core/tools/project-json).
+This command creates a project.json file and a Program.cs file. There is nothing special about this process and these files could have been created by hand. The Program.cs file contains the main entry point of the application. The project.json file replaces the .sln and .csproj files of traditional .net with a simpler file that looks much like an [NPM package.json](https://docs.npmjs.com/files/package.json). Node.js developers should be very familiar with the syntax. The full reference can be found at [https://docs.microsoft.com/en-us/dotnet/articles/core/tools/project-json](https://docs.microsoft.com/en-us/dotnet/articles/core/tools/project-json).
 
 Run the project by executing:
 ```bash
@@ -75,7 +75,7 @@ Issue any request to localhost on that port and you should recieve a 404 back.
 
 ## Adding MVC
 
-So far we have a simple HTTP server but we are lacking controller routing. Start with adding the following dependencies to your project.json:
+So far we have a simple HTTP server, but are lacking controller routing. Start by adding the following dependencies to your project.json:
 ```json
 "Microsoft.AspNetCore.Mvc": "1.0.1",
 "Microsoft.AspNetCore.Routing": "1.0.1",
@@ -84,17 +84,17 @@ So far we have a simple HTTP server but we are lacking controller routing. Start
 "Microsoft.Extensions.Logging.Debug": "1.0.0"
 ```
 
-Then in Program.cs add this line to the ConfigureServices to add the MVC related services to the DI container:
+Then in Program.cs add this line to the ConfigureServices method to add the MVC related services to the DI container:
 ```C#
 services.AddMvc();
 ```
-In the Configure method add these lines to enable console logging, which is very useful for development, and enable the MVC routing:
+In the Configure method add these lines to enable console logging, which is very useful for development, and enable MVC routing:
 ```C#
 loggerFactory.AddConsole(LogLevel.Information);        
 app.UseMvc();
 ```
 
-Create a Pokemon.cs file with the following content to act as a model for our application. We are modeling a Pokemon service for this tutorial.
+We need to create a Model class to represent our domain entities. Since we are modeling a "Pokemon Service", create a Pokemon.cs with the following content:
 ```c#
 using System.ComponentModel.DataAnnotations;
 
@@ -135,7 +135,9 @@ namespace ConsoleApplication
 }
 ```
 
-Notice that we are extending "Controller" and not "ApiController" as we would in Web API 2. ASP.net core has streamlined the process for handling web service calls with traditional HTML requests. Also notice that nowhere do we specify that we are returning JSON or marshall the object to JSON.
+Notice that we are extending "Controller" and not "ApiController" as we would in Web API 2. 
+ASP.net core has streamlined the process for handling web service calls with traditional HTML requests. 
+Also notice that nowhere do we specify that we are returning JSON or marshalling the object to JSON.
 
 Start the app server and hit the "pokemon endpoint" with curl and you should see the following:
 ```bash
@@ -158,17 +160,18 @@ Start with adding the following to the dependencies section of your project.json
 }
 ```
 
-We are going to be using Sqlite for this project because it is portable and easy to setup. To use SQL server (or Postgres etc,) include the appropriate import.
+We are going to be using Sqlite for this project because it is portable and easy to setup. To use SQL server (or Postgres etc,) include the appropriate dependency.
 
-To use databse migrations add a new section to the project.json as a sibling to the dependencies section:
+To use database migrations add a new section to the project.json as a sibling to the dependencies section:
 ```json
 "tools": {
     "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final"
 }
 ```
-"Tools" in .Net core allow new commands to be added to the dotnet command for development or build time tasks. This tool gives us "dotnet ef" command.
+"Tools" in .Net core allow new commands to be added to the dotnet command for development or build time tasks. 
+This tool gives us the "dotnet ef" command.
 
-Just like previous versions of Entity Framework, we need to create a "DBContext" class to act as an access point for data operations. Instances of this class are not threadsafe and should not be shared accross the application, but should be shared accross the request. (For those of you from the Hibernate space, this is the equivilent of a "Session" NOT a "SessionFactory"). Luckly, the DI container can handle all of this scoping for us.
+Just like previous versions of Entity Framework, we need to create a "DbContext" class to act as an access point for data operations. Instances of this class are not threadsafe and should not be shared accross the application, but should be shared accross the request. (For those of you from the Hibernate space, this is the equivilent of a "Session" NOT a "SessionFactory"). Luckly, the DI container can handle all of this scoping for us.
 
 ```C#
 using Microsoft.EntityFrameworkCore;
@@ -244,7 +247,7 @@ $ dotnet ef migrations add createPokemon
 $ dotnet ef database update
 ```
 
-The first command creates a "Migration" which is a file in the migrations folder that will perform the needed DML to get the databse to the target structure EF expects. The second command upgrades the configured database. A cool feature of the EF toolset here is that it actually looks at the application to determine the configuration for connecting to the database. This is why we didn't have to specify any configuration as part of the "database update" command.
+The first command creates a "Migration" which is a file in the migrations folder that will perform the needed DML to get the databse to the target structure EF expects. The second command upgrades the configured database. A cool feature of the EF toolset is that it actually looks at the application to determine the configuration for connecting to the database. This is why we didn't have to specify any configuration as part of the "database update" command.
 
 If we rerun the application and hit (http://localhost:5000/pokemon/) we should now get an empty Json array.
 
@@ -263,7 +266,8 @@ public IActionResult Post([FromBody]Pokemon newPokemon)
 }
 ```
 
-The ModelState check at the beginning of the method determines if validation has passed. We can add validation rules to our model by putting attributes that inherent from [System.ComponentModel.DataAnnotations.ValidationAttribute](https://msdn.microsoft.com/en-us/library/system.componentmodel.dataannotations.validationattribute(v=vs.110).aspx) including custom classes.
+The ModelState check at the beginning of the method determines if validation has passed. 
+We can add validation rules by adding any attribute that inherents from [System.ComponentModel.DataAnnotations.ValidationAttribute](https://msdn.microsoft.com/en-us/library/system.componentmodel.dataannotations.validationattribute(v=vs.110).aspx) to a property on our model.
 
 We add the Pokemon to the "Set" abstraction that the DbContext provides. Then call "SaveChanges" to flush the changes to the DB. This call will start a transaction, flush all pending changes to the DB and commit it. We should be able to see the SQL executed in the console due to our logging setup from earlier.
 
@@ -326,12 +330,12 @@ app.UseJwtBearerAuthentication(new JwtBearerOptions
 
 This configuration will authenticate any incoming request to Google and allow any google user to authenticate the application. 
 We can use any OpenID Connect provider by changing the metadata address.
-The "audience" is our applicaiton, so "ValidateAudience" determines if we should validate that the token was issued specifically for us.
+The "audience" is our application, so "ValidateAudience" determines if we should validate that the token was issued specifically for us.
 
 Start the application and attempt to request http://localhost:5000/pokemon and be greeted with a 401 response. 
 
 To invoke services secured by JWT I like to use [Postman](https://www.getpostman.com) because it has built in support for fetching tokens from an OAuth provider.
-Instructions on using Postman to generate OAuth tokens can be found at https://www.getpostman.com/docs/helpers. You will need to set up an "Application" inside your google account to generate a client ID/Secret for Postman to use.
+Instructions on using Postman to generate OAuth tokens can be found at https://www.getpostman.com/docs/helpers#oauth-20. You will need to set up an "Application" inside your google account to generate a client ID/Secret for Postman to use.
 
 ## Conclusion
 
