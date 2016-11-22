@@ -38,8 +38,7 @@ namespace PokemonService
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
-            var pokemon = dbContext.Pokemon
-                .FirstOrDefault(p => p.Id == id);
+            var pokemon = dbContext.Pokemon.Find(id);
             if (pokemon == null)
             {
                 return NotFound();
@@ -63,10 +62,12 @@ namespace PokemonService
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
-            dbContext.Pokemon.RemoveRange(
-                dbContext.Pokemon.Where(p => p.Id == id).ToArray()
-            );
-            dbContext.SaveChanges();
+            var pokemon = dbContext.Pokemon.Find(id);
+            if(pokemon != null)
+            {
+                dbContext.Pokemon.Remove(pokemon);
+                dbContext.SaveChanges();
+            }
             return Ok();
         }
     }

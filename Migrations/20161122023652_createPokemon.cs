@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace demo.Migrations
+namespace work.Migrations
 {
     public partial class createPokemon : Migration
     {
@@ -13,7 +13,7 @@ namespace demo.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("Autoincrement", true),
+                        .Annotation("Sqlite:Autoincrement", true),
                     Name = table.Column<string>(nullable: false),
                     Type = table.Column<string>(nullable: true)
                 },

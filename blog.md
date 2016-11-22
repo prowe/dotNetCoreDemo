@@ -30,8 +30,8 @@ Since we are building a RESTful web service, we will need something to listen to
 
 Add the following libraries to the dependencies section of the project.json file (versions may differ)
 ```json
-"Microsoft.AspNetCore.Server.Kestrel": "1.0.1",
-"Microsoft.Extensions.Configuration.EnvironmentVariables": "1.0.0"
+"Microsoft.AspNetCore.Server.Kestrel": "1.1.0",
+"Microsoft.Extensions.Configuration.EnvironmentVariables": "1.1.0"
 ```
 
 To start the server with the application, remove the Console.out call inside the Program.cs main method and replace it with the following:
@@ -77,11 +77,11 @@ Issue any request to localhost on that port and you should recieve a 404 back.
 
 So far we have a simple HTTP server, but are lacking controller routing. Start by adding the following dependencies to your project.json:
 ```json
-"Microsoft.AspNetCore.Mvc": "1.0.1",
-"Microsoft.AspNetCore.Routing": "1.0.1",
-"Microsoft.Extensions.Logging": "1.0.0",
-"Microsoft.Extensions.Logging.Console": "1.0.0",
-"Microsoft.Extensions.Logging.Debug": "1.0.0"
+"Microsoft.AspNetCore.Mvc": "1.1.0",
+"Microsoft.AspNetCore.Routing": "1.1.0",
+"Microsoft.Extensions.Logging": "1.1.0",
+"Microsoft.Extensions.Logging.Console": "1.1.0",
+"Microsoft.Extensions.Logging.Debug": "1.1.0"
 ```
 
 Then in Program.cs add this line to the ConfigureServices method to add the MVC related services to the DI container:
@@ -153,9 +153,9 @@ We now have a working web service.
 
 Start with adding the following to the dependencies section of your project.json:
 ```json
-"Microsoft.EntityFrameworkCore.Sqlite": "1.0.1",
+"Microsoft.EntityFrameworkCore.Sqlite": "1.1.0",
 "Microsoft.EntityFrameworkCore.Design": {
-    "version": "1.0.0-preview2-final",
+    "version": "1.1.0",
     "type": "build"
 }
 ```
@@ -165,7 +165,7 @@ We are going to be using Sqlite for this project because it is portable and easy
 To use database migrations add a new section to the project.json as a sibling to the dependencies section:
 ```json
 "tools": {
-    "Microsoft.EntityFrameworkCore.Tools": "1.0.0-preview2-final"
+    "Microsoft.EntityFrameworkCore.Tools.DotNet": "1.1.0-preview4-final"
 }
 ```
 "Tools" in .Net core allow new commands to be added to the dotnet command for development or build time tasks. 
@@ -182,8 +182,13 @@ namespace ConsoleApplication
     {
         public DbSet<Pokemon> Pokemon {get; set;}
 
-        public PokemonDbContext(DbContextOptions options) : base(options)
+        public PokemonDbContext() : base()
         { }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlite("Filename=pokemon.db");
+        }
     }
 }
 ```
@@ -195,10 +200,7 @@ using Microsoft.EntityFrameworkCore;
 public void ConfigureServices(IServiceCollection services)
 {
 ...
-    services.AddDbContext<PokemonDbContext>(options =>
-    {
-        options.UseSqlite("Filename=pokemon.db");
-    });
+    services.AddDbContext<PokemonDbContext>();
 }
 ```
 
@@ -220,8 +222,7 @@ Now we can update our Get method as follows:
 [HttpGet("{id}")]
 public IActionResult Get(int id)
 {
-    var pokemon = dbContext.Pokemon
-        .FirstOrDefault(p => p.Id == id);
+    var pokemon = dbContext.Pokemon.Find(id);
     if (pokemon == null)
     {
         return NotFound();
@@ -292,10 +293,12 @@ Deletes can be handled as follows:
 [HttpDelete("{id}")]
 public IActionResult Delete(int id)
 {
-    dbContext.Pokemon.RemoveRange(
-        dbContext.Pokemon.Where(p => p.Id == id).ToArray()
-    );
-    dbContext.SaveChanges();
+    var pokemon = dbContext.Pokemon.Find(id);
+    if(pokemon != null)
+    {
+        dbContext.Pokemon.Remove(pokemon);
+        dbContext.SaveChanges();
+    }
     return Ok();
 }
 ```
@@ -306,7 +309,7 @@ Let's secure our service using OpenID Connect JWT Bearer Tokens. This will allow
 
 Add a new dependency to project.json:
 ```json
-"Microsoft.AspNetCore.Authentication.JwtBearer": "1.0.0"
+"Microsoft.AspNetCore.Authentication.JwtBearer": "1.1.0"
 ```
 
 Mark the controller as requiring authorization by adding this attribute:

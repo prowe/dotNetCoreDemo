@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using PokemonService;
 
-namespace demo.Migrations
+namespace work.Migrations
 {
     [DbContext(typeof(PokemonDbContext))]
     partial class PokemonDbContextModelSnapshot : ModelSnapshot
@@ -13,7 +13,7 @@ namespace demo.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.1");
+                .HasAnnotation("ProductVersion", "1.1.0-rtm-22752");
 
             modelBuilder.Entity("PokemonService.Pokemon", b =>
                 {

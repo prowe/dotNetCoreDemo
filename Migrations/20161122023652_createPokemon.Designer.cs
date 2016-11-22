@@ -5,16 +5,16 @@ using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using PokemonService;
 
-namespace demo.Migrations
+namespace work.Migrations
 {
     [DbContext(typeof(PokemonDbContext))]
-    [Migration("20161012010635_createPokemon")]
+    [Migration("20161122023652_createPokemon")]
     partial class createPokemon
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
-                .HasAnnotation("ProductVersion", "1.0.1");
+                .HasAnnotation("ProductVersion", "1.1.0-rtm-22752");
 
             modelBuilder.Entity("PokemonService.Pokemon", b =>
                 {

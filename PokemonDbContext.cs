@@ -10,7 +10,12 @@ namespace PokemonService
     {
         public DbSet<Pokemon> Pokemon { get; set; }
 
-        public PokemonDbContext(DbContextOptions options) : base(options)
+        public PokemonDbContext() : base()
         { }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            optionsBuilder.UseSqlite("Filename=pokemon.db");
+        }
     }
 }
