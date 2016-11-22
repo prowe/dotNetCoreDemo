@@ -17,6 +17,7 @@ namespace PokemonService
         {
             var webHost = new WebHostBuilder()
                 .UseKestrel()
+                .UseUrls("http://0.0.0.0:5000")
                 .UseStartup<Program>()
                 .Build();
 

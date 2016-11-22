@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System;
 
 namespace PokemonService
 {
@@ -15,7 +16,12 @@ namespace PokemonService
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Filename=pokemon.db");
+            var connectionString = Environment.GetEnvironmentVariable("ConnectionString");
+            if(connectionString == null)
+            {
+                connectionString = "Filename=pokemon.db";
+            }
+            optionsBuilder.UseSqlite(connectionString);
         }
     }
 }

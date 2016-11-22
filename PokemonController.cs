@@ -6,7 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace PokemonService
 {
     [Route("pokemon")]
-    [Authorize]
+   // [Authorize]
     public class PokemonController : Controller
     {
         private readonly PokemonDbContext dbContext;

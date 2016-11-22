@@ -1,10 +1,15 @@
 FROM microsoft/dotnet
 
 EXPOSE 5000
-
-ADD . /app
 WORKDIR /app
 
-RUN dotnet restore && dotnet build
+RUN mkdir data
+ENV ConnectionString "FileName=/app/data/pokemon.db"
 
-CMD dotnet run
+ADD project.json .
+RUN dotnet restore
+
+ADD . .
+
+RUN dotnet publish -c Release -o out
+CMD ["dotnet", "out/app.dll"]
