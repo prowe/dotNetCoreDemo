@@ -1,10 +1,10 @@
 # .NET core from Soup-to-Nuts.
 
-Build a API backend for your application using the newest version of .NET that can be developed anywhere and run everywhere.
+Build a API backend for your application using the newest version of .NET that can be developed anywhere and run everywhere. This tutorial walks through the process to build a production-ready service to perform CRUD operations on a "Pokemon."
 
 ## Environment Setup
 
-Download and Install the .Net Core SDK from [https://www.microsoft.com/net/core](https://www.microsoft.com/net/core). You will also need a text editor you're comfortable with. 
+Download and Install the .Net Core SDK from [https://www.microsoft.com/net/core](https://www.microsoft.com/net/core). If you are prompted for a type of install, select "Command Line/Other." You will also need a text editor you're comfortable with. 
 
 [Postman](https://www.getpostman.com) is optional but useful for creating web service calls using JWT tokens.
 
@@ -52,7 +52,7 @@ using Microsoft.Extensions.Logging;
 
 Kestrel needs a "Startup" class to be handed to it. This class contains configuration callback methods that handle everything from the dependency injection container to routing rules.
 
-Add the following method to the Program class:
+Add the following methods to the Program class:
 ```
 public void ConfigureServices(IServiceCollection services)
 {
@@ -64,7 +64,7 @@ public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerF
 
 The first method (ConfigureServices) is where "services" (Java folks, read as "Beans") can be added to the dependency injection container.
 
-The Configure method will be autowired with any services declared in its parameter list and is responsible for configuring the Kestrel request pipline. Here is were we will enable security and CORS, etc.
+The Configure method will be autowired with any services declared in its parameter list and is responsible for configuring the Kestrel request pipline. Here is were we will enable MVC and configure security.
 
 Run the application as before and you should see this message:
 ```
@@ -73,7 +73,7 @@ Application started. Press Ctrl+C to shut down.
 ```
 Issue any request to localhost on that port and you should recieve a 404 back.
 
-## Adding MVC
+## Adding MVC (Model View Controller)
 
 So far we have a simple HTTP server, but are lacking controller routing. Start by adding the following dependencies to your project.json:
 ```json
@@ -109,7 +109,7 @@ namespace ConsoleApplication
 }
 ```
 
-Now let's add a simple controller that returns a hard coded Pokemon for every get request to just test that we have routing setup properly. Create a PokemonController with this content:
+Now let's add a simple controller that returns a hard coded Pokemon for every get request to just test that we have routing setup properly. Create a PokemonController.cs file with this content:
 ```c#
 using System.Collections.Generic;
 using System.Linq;
@@ -244,6 +244,7 @@ Now If we start the app and curl the /pokemon end point (the Get method that tak
 This is because we have not yet created the schema. We can use Entity Framework to create tables by creating some "migrations". From the command line run the following two commands:
 
 ```bash
+$ dotnet restore
 $ dotnet ef migrations add createPokemon
 $ dotnet ef database update
 ```
@@ -312,9 +313,13 @@ Add a new dependency to project.json:
 "Microsoft.AspNetCore.Authentication.JwtBearer": "1.1.0"
 ```
 
-Mark the controller as requiring authorization by adding this attribute:
+Mark the controller as requiring authorization by adding this using and attribute attribute (also known as "annotation" in the Java space):
 ```c#
+using Microsoft.IdentityModel.Tokens;
+...
+[Route("pokemon")]
 [Authorize]
+public class PokemonController : Controller
 ```
 
 In the Configure method of Program.cs add the JWT bearer token configuration:
@@ -334,6 +339,7 @@ app.UseJwtBearerAuthentication(new JwtBearerOptions
 This configuration will authenticate any incoming request to Google and allow any google user to authenticate the application. 
 We can use any OpenID Connect provider by changing the metadata address.
 The "audience" is our application, so "ValidateAudience" determines if we should validate that the token was issued specifically for us.
+For more information about JWT see [https://jwt.io/introduction/](https://jwt.io/introduction/)
 
 Start the application and attempt to request http://localhost:5000/pokemon and be greeted with a 401 response. 
 
